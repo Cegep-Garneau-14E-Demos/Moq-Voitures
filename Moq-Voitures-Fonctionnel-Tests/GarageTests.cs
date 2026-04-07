@@ -11,7 +11,7 @@ namespace Moq_Voitures_Fonctionnel_Tests
         {
             // arrange
             // la vraie voiture dépend d'une interface, on la remplace par un mock
-            var voitureMock = new Mock<IVoiture>();
+            Mock<IVoiture> voitureMock = new Mock<IVoiture>();
             // Setup : force le retour de True pour peutPrendreLaRoute()
             voitureMock.Setup(x => x.peutPrendreLaRoute()).Returns(true);
             Garage garage = new Garage();

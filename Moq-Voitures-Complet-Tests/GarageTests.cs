@@ -11,12 +11,12 @@ namespace Moq_Voitures_Complet_Tests
 
         //Concept : Verify — valider qu'une méthode mock a été appelée
         [Test]
-        public void TesterVoiture_Appel_Roule()
+        public void TesterVoiture_Appelle_Roule()
         {
             //arrange
             //la vraie voiture dépend d'un service externe, on la remplace par un mock
-            var voitureMock = new Mock<IVoiture>();
-            var garage = new Garage();
+            Mock<IVoiture> voitureMock = new Mock<IVoiture>();
+            Garage garage = new Garage();
 
             //act
             garage.TesterVoiture(voitureMock.Object);
@@ -31,9 +31,9 @@ namespace Moq_Voitures_Complet_Tests
         {
             //arrange
             //note : en pratique, initialisez les mocks en membres de classe plutôt que dans chaque test
-            var garage = new Garage();
-            var voitureMock = new Mock<IVoiture>();
-            var saaqMock = new Mock<IServiceExterneSaaq>();
+            Garage garage = new Garage();
+            Mock<IVoiture> voitureMock = new Mock<IVoiture>();
+            Mock<IServiceExterneSaaq> saaqMock = new Mock<IServiceExterneSaaq>();
             //Setup : It.IsAny accepte n'importe quel argument, Returns fixe la valeur retournée
             voitureMock.Setup(x => x.PeutPrendreLaRoute(It.IsAny<IServiceExterneSaaq>())).Returns(false);
 
@@ -46,13 +46,13 @@ namespace Moq_Voitures_Complet_Tests
         public void VendreVoiture_RetourneLaVoiture_Si_Plaque_Valide()
         {
             //arrange
-            var garage = new Garage();
-            var saaqMock = new Mock<IServiceExterneSaaq>();
-            var fauxNoSerie = 12345;
+            Garage garage = new Garage();
+            Mock<IServiceExterneSaaq> saaqMock = new Mock<IServiceExterneSaaq>();
+            int fauxNoSerie = 12345;
             saaqMock.Setup(x => x.ObtenirNouveauNoSerie()).Returns(fauxNoSerie);
             saaqMock.Setup(x => x.ValiderSiPlaqueValide(It.IsAny<IVoiture>())).Returns(true);
             //voiture réelle créée avec un mock de la SAAQ : aura le no de série 12345
-            var voiture = new Voiture(saaqMock.Object);
+            Voiture voiture = new Voiture(saaqMock.Object);
 
             //act
             Voiture voitureVendu = (Voiture)garage.VendreVoiture(voiture, saaqMock.Object);
@@ -66,9 +66,9 @@ namespace Moq_Voitures_Complet_Tests
         public void Vendre_Voiture_Fail_Si_Propriétaire_NonNull()
         {
             //arrange
-            var voitureMock = new Mock<IVoiture>();
-            var saaqMock = new Mock<IServiceExterneSaaq>();
-            var garage = new Garage();
+            Mock<IVoiture> voitureMock = new Mock<IVoiture>();
+            Mock<IServiceExterneSaaq> saaqMock = new Mock<IServiceExterneSaaq>();
+            Garage garage = new Garage();
             //Setup d'une propriété : simule une voiture ayant déjà un propriétaire
             voitureMock.Setup(x => x.Proprietaire.Nom).Returns("Christo");
             saaqMock.Setup(x => x.ValiderSiPlaqueValide(It.IsAny<IVoiture>())).Returns(true);
@@ -82,16 +82,16 @@ namespace Moq_Voitures_Complet_Tests
         public void Vendre_Voiture_Ajoute_Voiture_A_HistoriqueDeVente_Si_Vendue()
         {
             //arrange
-            var garage = new Garage();
-            var saaqMock = new Mock<IServiceExterneSaaq>();
-            var fauxNoSerie = 12345;
+            Garage garage = new Garage();
+            Mock<IServiceExterneSaaq> saaqMock = new Mock<IServiceExterneSaaq>();
+            int fauxNoSerie = 12345;
             int nombreDeValidationsDePlaques = 0;
             saaqMock.Setup(x => x.ObtenirNouveauNoSerie()).Returns(fauxNoSerie);
             //Callback : incrémente un compteur chaque fois que ValiderSiPlaqueValide est appelé
             saaqMock.Setup(x => x.ValiderSiPlaqueValide(It.IsAny<IVoiture>()))
                 .Callback(() => nombreDeValidationsDePlaques++)
                 .Returns(true);
-            var voiture = new Voiture(saaqMock.Object);
+            Voiture voiture = new Voiture(saaqMock.Object);
 
             //act
             Voiture voitureVendu = (Voiture)garage.VendreVoiture(voiture, saaqMock.Object);
